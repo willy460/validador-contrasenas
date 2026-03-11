@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard';
 import { useCallback, useState } from 'react';
 import {
   ScrollView,
@@ -69,26 +70,6 @@ function analyzePassword(password: string): StrengthResult {
   };
 }
 
-const CHARSET_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-const CHARSET_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const CHARSET_NUMBERS = '0123456789';
-const CHARSET_SYMBOLS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-function generatePassword(length = 16): string {
-  const pool = CHARSET_LOWER + CHARSET_UPPER + CHARSET_NUMBERS + CHARSET_SYMBOLS;
-  // Guarantee at least one of each type
-  const required = [
-    CHARSET_LOWER[Math.floor(Math.random() * CHARSET_LOWER.length)],
-    CHARSET_UPPER[Math.floor(Math.random() * CHARSET_UPPER.length)],
-    CHARSET_NUMBERS[Math.floor(Math.random() * CHARSET_NUMBERS.length)],
-    CHARSET_SYMBOLS[Math.floor(Math.random() * CHARSET_SYMBOLS.length)],
-  ];
-  const rest = Array.from({ length: length - 4 }, () =>
-    pool[Math.floor(Math.random() * pool.length)]
-  );
-  return [...required, ...rest].sort(() => Math.random() - 0.5).join('');
-}
-
 // ─── Requirement Row ──────────────────────────────────────────────────────────
 
 function Req({ met, label }: { met: boolean; label: string }) {
@@ -109,18 +90,11 @@ export default function HomeScreen() {
 
   const strength = analyzePassword(password);
 
-  const handleGenerate = useCallback(() => {
-    const newPass = generatePassword(18);
-    setPassword(newPass);
-    setVisible(true);
-  }, []);
-
-  const handleCopy = useCallback(() => {
-    // Clipboard API not available without expo-clipboard;
-    // show feedback anyway so UX feels complete
+  const handleCopy = useCallback(async () => {
+    await Clipboard.setStringAsync(password);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, []);
+  }, [password]);
 
   const bars = [0, 1, 2, 3, 4];
 
@@ -132,7 +106,7 @@ export default function HomeScreen() {
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        <Text style={styles.badge}> SEGURIDAD</Text>
+        <Text style={styles.badge}>SEGURIDAD</Text>
         <Text style={styles.title}>Validador de{'\n'}Contraseñas</Text>
         <Text style={styles.subtitle}>Comprueba qué tan segura es tu clave</Text>
       </View>
@@ -143,7 +117,7 @@ export default function HomeScreen() {
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
-            placeholder="Escribe o genera una contraseña"
+            placeholder="Escribe tu contraseña"
             placeholderTextColor="#555"
             secureTextEntry={!visible}
             value={password}
@@ -189,7 +163,7 @@ export default function HomeScreen() {
       {/* ── Crack Time Card ── */}
       {password.length > 0 && (
         <View style={[styles.card, styles.crackCard]}>
-          <Text style={styles.crackTitle}> Tiempo estimado para hackear</Text>
+          <Text style={styles.crackTitle}>⏱ Tiempo estimado para hackear</Text>
           <Text style={[styles.crackTime, { color: strength.color }]}>
             {strength.crackTime}
           </Text>
@@ -210,14 +184,11 @@ export default function HomeScreen() {
 
       {/* ── Actions ── */}
       <View style={styles.actionsRow}>
-        <TouchableOpacity style={[styles.actionBtn, styles.generateBtn]} onPress={handleGenerate}>
-          <Text style={styles.actionBtnText}> Generar</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionBtn, styles.copyBtn, !password && styles.disabledBtn]}
           onPress={handleCopy}
           disabled={!password}>
-          <Text style={styles.actionBtnText}>{copied ? 'Copiado' : 'Copiar'}</Text>
+          <Text style={styles.actionBtnText}>{copied ? '☑ Copiado' : 'Copiar contraseña'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -383,9 +354,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  generateBtn: {
-    backgroundColor: '#00c7be',
   },
   copyBtn: {
     backgroundColor: '#1e1e1e',
