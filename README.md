@@ -15,13 +15,10 @@ Instalación y ejecución
 1. Clonar el repositorio:
 git clone https://github.com/willy460/validador-contrasenas.git
 
-2. Entrar a la carpeta del proyecto:
-cd validador-contrasenas
-
-3.Instalar dependencias:
+2. Instalar dependencias:
 npm install
 
-4.Ejecutar la aplicación:
+3. Ejecutar la aplicación:
 npx expo start
 
 Luego se puede abrir la aplicación en:
