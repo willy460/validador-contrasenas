@@ -1,9 +1,22 @@
+#Validador de contraseñas
+
+##Descripcion
+Aplicacion movil desarrollada con React Native y expo que valida si una contraseña cumple criterios de seguridad
+
+##Integrantes
+- Jonathan Valencia
+- Karina Nacibar
+- Esmeralda Musse
+- William Mera
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
 
+1. Clone repository
+   git clone
 1. Install dependencies
 
    ```bash
